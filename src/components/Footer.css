@@ -1,0 +1,7 @@
+.foot-list{
+    list-style: none;
+}
+.foot-list>li:hover{
+    text-decoration: underline;
+    cursor: pointer;
+}
