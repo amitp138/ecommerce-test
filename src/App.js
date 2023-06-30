@@ -12,7 +12,6 @@ import ProductDetails from "./Pages/ProductDetails";
 import SignIn from "./Pages/SignIn";
 import Register from "./Pages/Register";
 import MyAccount from "./Pages/MyAccount";
-import Footer from "./components/Footer";
 
 function App() {
   const [theme] = useThemeHook();
