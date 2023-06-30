@@ -4,20 +4,15 @@ import { useThemeHook } from "../GlobalComponents/ThemeProvider";
 import Lightbox from "react-lightbox-component";
 import "react-lightbox-component/build/css/index.css";
 import "./product-details.css";
-import { useCart } from "react-use-cart";
 import { BsCartPlus } from "react-icons/bs";
-import axios from "axios";
 import { useParams } from "react-router-dom";
+import { useCartStore } from "../zustandCart/CartOperations";
 
 const ProductDetails = () => {
   const { productId } = useParams();
   const [productData, setProductData] = useState([]);
   const [theme] = useThemeHook();
-  const { addItem } = useCart();
-
-  useEffect(() => {
-    getResponse();
-  }, []);
+  const Addtocart = useCartStore((CartStore) => CartStore.ADD_TO_CART);
 
   const getResponse = async () => {
     try {
@@ -28,6 +23,10 @@ const ProductDetails = () => {
       console.log(error);
     }
   };
+  useEffect(() => {
+    getResponse();
+  }, []);
+
   return (
     <Container className="py-5">
       <Row className="justify-content-center mt-5">
@@ -65,7 +64,7 @@ const ProductDetails = () => {
         >
           <h1>{productData.title}</h1>
           <Button
-            onClick={() => addItem(productData)}
+            onClick={() => Addtocart(productData)}
             className={
               theme ? "bg-dark-primary text-black" : "bg-light-primary"
             }

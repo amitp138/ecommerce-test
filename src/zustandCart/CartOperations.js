@@ -46,5 +46,12 @@ const CartStore = (set, get) => ({
       }));
     }
   },
+  REMOVE_ITEM: (data) => {
+    set((CartStore) => ({
+      Cart: CartStore.Cart.filter((citem) => citem.id !== data.id),
+      CartItemsQuantity: CartStore.CartItemsQuantity - data.quantity,
+      CartTotalPrice: CartStore.CartTotalPrice - data.price * data.quantity,
+    }));
+  },
 });
 export const useCartStore = create(CartStore);

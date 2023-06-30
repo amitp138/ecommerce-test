@@ -10,7 +10,7 @@ const Cart = () => {
   const removeFromcart = useCartStore(
     (CartStore) => CartStore.REMOVE_FROM_CART
   );
-
+  const removeItem = useCartStore((CartStore) => CartStore.REMOVE_ITEM);
   return (
     <Container className="py-4 mt-5">
       <h1
@@ -97,7 +97,7 @@ const Cart = () => {
                       variant="danger"
                       style={{ marginTop: "40px" }}
                       onClick={() => {
-                        removeFromcart(item);
+                        removeItem(item);
                       }}
                       className="ms-2"
                     >
