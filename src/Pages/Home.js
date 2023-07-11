@@ -1,30 +1,102 @@
 import React, { useEffect, useState } from "react";
 import { Row, Col, InputGroup, FormControl } from "react-bootstrap";
+import debounce from "lodash.debounce";
 import { useThemeHook } from "../GlobalComponents/ThemeProvider";
 import { BiSearch } from "react-icons/bi";
-import SearchFilter from "react-filter-search";
 import ProductCard from "../components/ProductCard";
 import Footer from "../components/Footer";
+import "./Home.css";
+import { useCallback } from "react";
 
 const Home = () => {
   const [theme] = useThemeHook();
   const [searchInput, setSearchInput] = useState("");
   const [productData, setProductData] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [filterData, setFilterData] = useState([]);
+  const [pages, SetPages] = useState([]);
 
   async function getResponse() {
-    const res = await fetch("https://fakestoreapi.com/products").then((res) =>
-      res.json()
+    const respro = await fetch("https://fakestoreapi.com/products").then(
+      (res) => res.json()
     );
-    setProductData(await res);
+
+    const categ = fetch("https://fakestoreapi.com/products/categories").then(
+      (res) => res.json()
+    );
+    const p = Array.from(
+      { length: Math.ceil(respro.length / 6) },
+      (_, index) => index + 1
+    );
+    console.log(p);
+    SetPages(p);
+    setCategories(await categ);
+    setProductData(await respro);
+    setFilterData(await respro.slice(0, 6));
   }
 
   useEffect(() => {
     getResponse();
   }, []);
+  const handleCategoryProduct = (cat) => {
+    console.log(cat);
+    const FilterCatItems = productData.filter((itm) => itm.category === cat);
+    setFilterData(FilterCatItems);
+  };
 
+  const handlePagination = (p) => {
+    const dataPerPage = productData.slice((p - 1) * 6, 6 * p);
+    setFilterData(dataPerPage);
+  };
+  const debouncedFilter = useCallback(
+    debounce((q) => {
+      console.log(q);
+      if (q === "") {
+        setFilterData(filterData);
+      } else {
+        setFilterData(
+          productData.filter((itm) =>
+            itm.title.toLowerCase().includes(q.toLowerCase())
+          )
+        );
+      }
+    }, 500),
+    []
+  );
+  const handleSearch = (e) => {
+    setSearchInput(e.target.value);
+    debouncedFilter(e.target.value);
+  };
   return (
     <>
-      <div style={{ margin: "40px" }}>
+      <div style={{ margin: "20px " }}>
+        <Row className="m-2" style={{ textAlign: "center" }}>
+          <Col
+            onClick={() => setFilterData(productData.slice(0, 6))}
+            className={`${
+              theme
+                ? "bg-dark-primary text-white rounded "
+                : "bg-light-primary text-white rounded "
+            }  m-2`}
+          >
+            All
+          </Col>
+          {categories.map((cat, i) => {
+            return (
+              <Col
+                key={i}
+                onClick={() => handleCategoryProduct(cat)}
+                className={`${
+                  theme
+                    ? "bg-dark-primary text-white rounded "
+                    : "bg-light-primary text-white rounded "
+                }  m-2`}
+              >
+                {cat}
+              </Col>
+            );
+          })}
+        </Row>
         <Row className="justify-content-center">
           <Col
             xs={10}
@@ -33,9 +105,6 @@ const Home = () => {
             xl={4}
             className="mb-3 mx-auto text-center"
           >
-            <div
-              className={theme ? " text-light d-flex" : " text-black d-flex"}
-            ></div>
             <InputGroup className="mb-3">
               <InputGroup.Text
                 className={
@@ -49,24 +118,32 @@ const Home = () => {
               <FormControl
                 placeholder="Search"
                 value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
+                onChange={handleSearch}
                 className={
                   theme ? "bg-light-black text-light" : "bg-light text-black"
                 }
               />
             </InputGroup>
           </Col>
-          <SearchFilter
-            value={searchInput}
-            data={productData}
-            renderResults={(results) => (
-              <Row className="justify-content-center">
-                {results.map((item, i) => (
-                  <ProductCard data={item} key={i} />
-                ))}
-              </Row>
-            )}
-          />
+
+          <Row className="justify-content-center ">
+            {filterData.map((item, i) => {
+              return <ProductCard data={item} key={i} />;
+            })}
+          </Row>
+        </Row>
+        <Row className="justify-content-center">
+          {pages.map((p, i) => {
+            return (
+              <button
+                key={i}
+                className={theme ? "dark-pagi" : "light-pagi"}
+                onClick={() => handlePagination(p)}
+              >
+                {p}
+              </button>
+            );
+          })}
         </Row>
       </div>
       <Footer />

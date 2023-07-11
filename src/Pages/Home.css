@@ -1,0 +1,21 @@
+.light-pagi {
+  border: 1.5px solid rgb(52, 148, 250);
+  color: black;
+  margin: 3px;
+  width: 36px;
+}
+.light-pagi:focus {
+  background-color: rgb(52, 148, 250);
+  color: white;
+}
+.dark-pagi {
+  border: 1.5px solid #f7bc70;
+  color: black;
+  margin: 3px;
+  background-color: white;
+  width: 36px;
+}
+.dark-pagi:focus {
+  background-color: #f7bc70;
+  color: black;
+}

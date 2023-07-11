@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Card } from "react-bootstrap";
+import { Button, Card, Col } from "react-bootstrap";
 import { useThemeHook } from "../GlobalComponents/ThemeProvider";
 import { BsCartPlus } from "react-icons/bs";
 import { Link } from "react-router-dom";
@@ -10,6 +10,7 @@ const ProductCard = (props) => {
 
   const Addtocart = useCartStore((CartStore) => CartStore.ADD_TO_CART);
   return (
+    <Col>
     <Card
       style={{ width: "18rem", height: "auto" }}
       className={`${
@@ -59,6 +60,7 @@ const ProductCard = (props) => {
         </Button>
       </Card.Body>
     </Card>
+    </Col>
   );
 };
 
