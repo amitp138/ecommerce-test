@@ -2,6 +2,8 @@ import React from "react";
 import { Button, Container, Col, Row, Table } from "react-bootstrap";
 import { useThemeHook } from "../GlobalComponents/ThemeProvider";
 import { useCartStore } from "../zustandCart/CartOperations";
+import { BsCartX, BsCartCheck } from "react-icons/bs";
+import { Link } from "react-router-dom";
 const Cart = () => {
   const [theme] = useThemeHook();
   const itemscart = useCartStore((CartStore) => CartStore.Cart);
@@ -11,6 +13,7 @@ const Cart = () => {
     (CartStore) => CartStore.REMOVE_FROM_CART
   );
   const removeItem = useCartStore((CartStore) => CartStore.REMOVE_ITEM);
+  const clearCart = useCartStore((CartStore) => CartStore.CLEAR_CART);
   return (
     <Container className="py-4 mt-5">
       <h1
@@ -117,6 +120,20 @@ const Cart = () => {
           >
             <Col className="py-2">
               <h4>Total Price: Rs. {cartTotal}</h4>
+            </Col>
+            <Col className="p-0" md={4}>
+              <Button variant="danger" className="m-2" onClick={clearCart}>
+                <BsCartX size="1.7rem" />
+                Clear Cart
+              </Button>
+              {itemscart && (
+                <Link to="/checkout">
+                  <Button variant="success" className="m-2">
+                    <BsCartCheck size="1.7rem" />
+                    Checkout
+                  </Button>
+                </Link>
+              )}
             </Col>
           </Row>
         )}

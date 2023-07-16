@@ -1,5 +1,36 @@
 import { create } from "zustand";
 
+const UserStore = (set, get) => ({
+  user: {
+    username: "",
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    orders: [],
+  },
+
+  setUser: (data) => {
+    console.log(data);
+    set((UserStore) => ({
+      user: {
+        username: data.username,
+        name: data.name,
+        email: data.email,
+        phone: data.number,
+      },
+    }));
+  },
+  updateUser: (data) => {
+    console.log(data);
+    set((UserStore) => ({
+      user: {
+        orders: data ?? [],
+      },
+    }));
+  },
+});
+
 const CartStore = (set, get) => ({
   Cart: [],
   CartItemsQuantity: 0,
@@ -53,5 +84,13 @@ const CartStore = (set, get) => ({
       CartTotalPrice: CartStore.CartTotalPrice - data.price * data.quantity,
     }));
   },
+  CLEAR_CART: () => {
+    set((CartStore) => ({
+      Cart: [],
+      CartItemsQuantity: 0,
+      CartTotalPrice: 0,
+    }));
+  },
 });
 export const useCartStore = create(CartStore);
+export const useUserStore = create(UserStore);

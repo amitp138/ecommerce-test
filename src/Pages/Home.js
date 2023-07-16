@@ -7,14 +7,24 @@ import ProductCard from "../components/ProductCard";
 import Footer from "../components/Footer";
 import "./Home.css";
 import { useCallback } from "react";
+import { auth, db } from "../Firebase";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { useUserStore } from "../zustandCart/CartOperations";
 
-const Home = () => {
+const Home = ({
+  productData,
+  setProductData,
+  categories,
+  setCategories,
+  filterData,
+  setFilterData,
+  pages,
+  SetPages,
+  noOfCardsPerPage,
+}) => {
   const [theme] = useThemeHook();
   const [searchInput, setSearchInput] = useState("");
-  const [productData, setProductData] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [filterData, setFilterData] = useState([]);
-  const [pages, SetPages] = useState([]);
+  const setUser = useUserStore((UserStore) => UserStore.setUser);
 
   async function getResponse() {
     const respro = await fetch("https://fakestoreapi.com/products").then(
@@ -25,19 +35,34 @@ const Home = () => {
       (res) => res.json()
     );
     const p = Array.from(
-      { length: Math.ceil(respro.length / 6) },
+      { length: Math.ceil(respro.length / noOfCardsPerPage) },
       (_, index) => index + 1
     );
     console.log(p);
     SetPages(p);
     setCategories(await categ);
     setProductData(await respro);
-    setFilterData(await respro.slice(0, 6));
+    setFilterData(await respro.slice(0, noOfCardsPerPage));
+
+    if (auth.currentUser) {
+      console.log(auth.currentUser);
+      const q = query(
+        collection(db, "users"),
+        where("id", "==", auth.currentUser.uid)
+      );
+      const querySnapshot = await getDocs(q);
+      console.log(querySnapshot.docs[0].data());
+      const doc = querySnapshot.docs[0].data();
+      setUser(doc);
+    }
   }
 
   useEffect(() => {
-    getResponse();
+    if (productData.length === 0) {
+      getResponse();
+    }
   }, []);
+
   const handleCategoryProduct = (cat) => {
     console.log(cat);
     const FilterCatItems = productData.filter((itm) => itm.category === cat);
@@ -45,7 +70,10 @@ const Home = () => {
   };
 
   const handlePagination = (p) => {
-    const dataPerPage = productData.slice((p - 1) * 6, 6 * p);
+    const dataPerPage = productData.slice(
+      (p - 1) * noOfCardsPerPage,
+      noOfCardsPerPage * p
+    );
     setFilterData(dataPerPage);
   };
   const debouncedFilter = useCallback(
@@ -72,7 +100,9 @@ const Home = () => {
       <div style={{ margin: "20px " }}>
         <Row className="m-2" style={{ textAlign: "center" }}>
           <Col
-            onClick={() => setFilterData(productData.slice(0, 6))}
+            onClick={() =>
+              setFilterData(productData.slice(0, noOfCardsPerPage))
+            }
             className={`${
               theme
                 ? "bg-dark-primary text-white rounded "

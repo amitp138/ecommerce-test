@@ -4,12 +4,18 @@ import { useThemeHook } from "../GlobalComponents/ThemeProvider";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/high-res.css";
 import { useNavigate } from "react-router-dom";
+import { auth } from "../Firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { useUserStore } from "../zustandCart/CartOperations";
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "../Firebase";
 
 const Register = () => {
   const [loading, setLoading] = useState(false);
   const [number, setNumber] = useState(null);
   const [theme] = useThemeHook();
   const navigate = useNavigate();
+  const setUser = useUserStore((UserStore) => UserStore.setUser);
 
   const handleSubmit = (event) => {
     const form = event.currentTarget;
@@ -21,10 +27,34 @@ const Register = () => {
     const email = form.email.value;
 
     if (username && password && firstname && lastname && email && number) {
+      setLoading(true);
+      createUserWithEmailAndPassword(auth, email, password)
+        .then(async (userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+          console.log(user);
+          const name = firstname + " " + lastname;
+          const docRef = await addDoc(collection(db, "users"), {
+            id: user.uid,
+            username,
+            name,
+            email,
+            phone: number,
+          });
+          console.log(docRef.id);
+          setUser({ username, name, email, number, orders: [] });
+          navigate("/");
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.log(errorCode, errorMessage);
+          // ..
+        });
+
       alert("user register");
 
       console.log(username, password, firstname, lastname, email, number);
-      navigate("/");
     }
   };
   return (

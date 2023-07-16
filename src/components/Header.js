@@ -6,11 +6,14 @@ import { VscAccount } from "react-icons/vsc";
 import { Link } from "react-router-dom";
 import { useCartStore } from "../zustandCart/CartOperations";
 
+
 const Header = () => {
   const { theme, setThemeMode } = useContext(ThemeContext);
   const [darkMode, setDarkMode] = useState(theme);
   const itemscart = useCartStore((CartStore) => CartStore.Cart);
   const totalItems = useCartStore((CartStore) => CartStore.CartItemsQuantity);
+
+
   useEffect(() => {
     setThemeMode(darkMode);
   }, [darkMode]);
@@ -44,6 +47,7 @@ const Header = () => {
             >
               Sign in
             </Link>
+
             <Nav.Link
               className={darkMode ? "text-dark-primary" : "text-light-primary"}
               onClick={() => setDarkMode(!darkMode)}
