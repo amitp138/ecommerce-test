@@ -4,15 +4,14 @@ import { ThemeContext } from "../GlobalComponents/ThemeProvider";
 import { BiSun, BiMoon, BiCart } from "react-icons/bi";
 import { VscAccount } from "react-icons/vsc";
 import { Link } from "react-router-dom";
-import { useCartStore } from "../zustandCart/CartOperations";
-
+import { useCartStore, useUserStore } from "../zustandCart/UserOperations";
 
 const Header = () => {
   const { theme, setThemeMode } = useContext(ThemeContext);
   const [darkMode, setDarkMode] = useState(theme);
   const itemscart = useCartStore((CartStore) => CartStore.Cart);
   const totalItems = useCartStore((CartStore) => CartStore.CartItemsQuantity);
-
+  const userData = useUserStore((userStore) => userStore.user);
 
   useEffect(() => {
     setThemeMode(darkMode);
@@ -67,12 +66,6 @@ const Header = () => {
               >
                 {totalItems}
               </span>
-
-              <span
-                style={{ marginLeft: !itemscart.length === 0 ? "-13px" : 0 }}
-              >
-                &nbsp;
-              </span>
             </Link>
             <Link
               to="my-account"
@@ -80,8 +73,21 @@ const Header = () => {
                 darkMode ? "text-dark-primary" : "text-light-primary"
               }`}
             >
-              <VscAccount size="1.8rem" />
-              &nbsp;
+              {userData.imageSrc ? (
+                <img
+                  src={userData.imageSrc}
+                  alt="User Profile"
+                  style={{
+                    width: "1.8rem",
+                    height: "1.8rem",
+                    borderRadius: "50%",
+                  }}
+                />
+              ) : (
+                <>
+                  <VscAccount size="1.8rem" />{" "}
+                </>
+              )}
             </Link>
           </Nav>
         </Navbar.Collapse>

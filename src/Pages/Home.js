@@ -9,7 +9,8 @@ import "./Home.css";
 import { useCallback } from "react";
 import { auth, db } from "../Firebase";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { useUserStore } from "../zustandCart/CartOperations";
+import { useUserStore } from "../zustandCart/UserOperations";
+import { GiCoinsPile } from "react-icons/gi";
 
 const Home = ({
   productData,
@@ -52,8 +53,12 @@ const Home = ({
       );
       const querySnapshot = await getDocs(q);
       console.log(querySnapshot.docs[0].data());
-      const doc = querySnapshot.docs[0].data();
-      setUser(doc);
+      if (!querySnapshot.empty) {
+        const doc = querySnapshot.docs[0].data();
+        const data = { ...doc, id: querySnapshot.docs[0].id };
+        console.log(data);
+        setUser(data);
+      }
     }
   }
 

@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import { Form, Button, Container, Card } from "react-bootstrap";
 import rupay from "../images/rupay.png";
 import visa from "../images/visa.png";
+import { useUserStore } from "../zustandCart/UserOperations";
 
 const PaymentForm = ({ onSubmit, amount }) => {
-  const [cardNumber, setCardNumber] = useState("");
-  const [expiryDate, setExpiryDate] = useState("");
-  const [cvv, setCvv] = useState("");
+  const userData = useUserStore((userStore) => userStore.user);
+  const [cardNumber, setCardNumber] = useState(userData.wallet?.cardNumber);
+  const [expiryDate, setExpiryDate] = useState(userData.wallet?.expiry);
+  const [cvv, setCvv] = useState(userData.wallet?.cvv);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -97,6 +99,11 @@ const PaymentForm = ({ onSubmit, amount }) => {
                 onChange={(e) => validateCvv(e.target.value)}
                 required
               />
+            </Form.Group>
+
+            <Form.Group controlId="amount">
+              <Form.Label>Amount:</Form.Label>
+              <Form.Control type="text" value={amount} readOnly />
             </Form.Group>
 
             <div className="d-flex justify-content-center mt-3">

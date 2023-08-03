@@ -1,14 +1,25 @@
 import React, { useState } from "react";
-import { Container, Row, Col, Button, Form, Spinner } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Button,
+  Form,
+  Spinner,
+  Image,
+} from "react-bootstrap";
 import { useThemeHook } from "../GlobalComponents/ThemeProvider";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/high-res.css";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../Firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { useUserStore } from "../zustandCart/CartOperations";
+import { useUserStore } from "../zustandCart/UserOperations";
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "../Firebase";
+import profilePicture from "../images/profile-picture.png";
+import { Storage } from "../Firebase";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 
 const Register = () => {
   const [loading, setLoading] = useState(false);
@@ -16,16 +27,24 @@ const Register = () => {
   const [theme] = useThemeHook();
   const navigate = useNavigate();
   const setUser = useUserStore((UserStore) => UserStore.setUser);
-
+  const [image, setImage] = useState(profilePicture);
+  const [imURL, setImgURL] = useState(null);
+  const handleImageChange = (e) => {
+    if (e.target.files[0]) {
+      console.log(URL.createObjectURL(e.target.files[0]));
+      setImage(URL.createObjectURL(e.target.files[0]));
+      setImgURL(e.target?.files[0]);
+    }
+  };
   const handleSubmit = (event) => {
     const form = event.currentTarget;
+    console.log(form);
     event.preventDefault();
     const username = form.username.value;
     const password = form.password.value;
     const firstname = form.firstName.value;
     const lastname = form.lastName.value;
     const email = form.email.value;
-
     if (username && password && firstname && lastname && email && number) {
       setLoading(true);
       createUserWithEmailAndPassword(auth, email, password)
@@ -34,16 +53,45 @@ const Register = () => {
           const user = userCredential.user;
           console.log(user);
           const name = firstname + " " + lastname;
-          const docRef = await addDoc(collection(db, "users"), {
-            id: user.uid,
-            username,
-            name,
-            email,
-            phone: number,
-          });
-          console.log(docRef.id);
-          setUser({ username, name, email, number, orders: [] });
-          navigate("/");
+          const storageRef = ref(Storage, `files/${name}`);
+          const uploadTask = uploadBytesResumable(storageRef, imURL);
+
+          uploadTask.on(
+            "state_changed",
+            (snapshot) => {
+              const progress = Math.round(
+                (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+              );
+              console.log(progress);
+            },
+            (error) => {
+              alert(error);
+            },
+            () => {
+              getDownloadURL(uploadTask.snapshot.ref).then(
+                async (downloadURL) => {
+                  console.log("File available at", downloadURL);
+                  const docRef = await addDoc(collection(db, "users"), {
+                    id: user.uid,
+                    username,
+                    name,
+                    email,
+                    phone: number,
+                    imageSrc: downloadURL,
+                  });
+                  console.log(docRef.id);
+                  setUser({
+                    id: docRef.id,
+                    username,
+                    name,
+                    email,
+                    phone: number,
+                  });
+                  navigate("/");
+                }
+              );
+            }
+          );
         })
         .catch((error) => {
           const errorCode = error.code;
@@ -58,7 +106,7 @@ const Register = () => {
     }
   };
   return (
-    <Container className="py-5 mt-5">
+    <Container className="mt-5">
       <Row className="justify-content-center mt-5">
         <Col
           xs={11}
@@ -77,6 +125,27 @@ const Register = () => {
             Create Account
           </h1>
           <Form onSubmit={handleSubmit}>
+            <Form.Group className="mb-3">
+              <div className="d-flex justify-content-center mb-3">
+                <Image
+                  src={image}
+                  alt="Profile Picture"
+                  className="image-placeholder"
+                  style={{
+                    width: "150px",
+                    height: "150px",
+                    borderRadius: "50%",
+                  }}
+                />
+              </div>
+              <Form.Control
+                name="profileImage"
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                required
+              />
+            </Form.Group>
             <Row>
               <Form.Group className="mb-3 col-lg-6">
                 <Form.Label>First name</Form.Label>

@@ -2,15 +2,15 @@ import React, { useState } from "react";
 import PaymentForm from "./PaymentForm";
 import PaymentConfirmation from "./PaymentConfirmation";
 import PaymentStatus from "./PaymentStatus";
-import { useCartStore } from "../zustandCart/CartOperations";
-import { useUserStore } from "../zustandCart/CartOperations";
+import { useCartStore } from "../zustandCart/UserOperations";
+import { useUserStore } from "../zustandCart/UserOperations";
 
 const Checkout = () => {
   const [step, setStep] = useState(1); // Tracks the current step of the payment process
   const [paymentData, setPaymentData] = useState(null); // Stores the payment data
   const totalPayment = useCartStore((CartStore) => CartStore.CartTotalPrice);
   const itemscart = useCartStore((CartStore) => CartStore.Cart);
-  const AddOrder = useUserStore((UserStore) => UserStore.updateUser);
+  const AddOrder = useUserStore((UserStore) => UserStore.updateOrder);
 
   const handlePaymentSubmit = (data) => {
     // Simulate payment processing
@@ -24,14 +24,15 @@ const Checkout = () => {
     const oDate = date.toLocaleDateString("en-US", options);
     futureDate.setDate(date.getDate() + 2); // Add 2 days to the current date
     const delDate = futureDate.toLocaleDateString("en-US", options);
-    const orderedProducts = itemscart.map((obj) => {
-      return {
+    const orderedProducts = {
+      items: itemscart.map((obj) => ({
         ...obj,
-        orderDate: oDate,
-        deliveredDate: delDate,
-        transactionId: data.transactionId,
-      };
-    });
+      })),
+      orderDate: oDate,
+      deliveredDate: delDate,
+      transactionId: data.transactionId,
+    };
+
     setTimeout(() => {
       console.log(orderedProducts);
       AddOrder(orderedProducts);

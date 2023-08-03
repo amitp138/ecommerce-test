@@ -6,7 +6,7 @@ import "react-lightbox-component/build/css/index.css";
 import "./product-details.css";
 import { BsCartPlus } from "react-icons/bs";
 import { useParams } from "react-router-dom";
-import { useCartStore } from "../zustandCart/CartOperations";
+import { useCartStore } from "../zustandCart/UserOperations";
 
 const ProductDetails = () => {
   const { productId } = useParams();

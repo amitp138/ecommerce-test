@@ -7,7 +7,7 @@ const Heading = (props) => {
   return (
     <>
       <h1
-        className={`text-center border-bottom py-2 m-0 ${props?.size} ${
+        className={`text-center border-bottom m-0 ${props?.size} ${
           theme ? "text-dark-primary" : "text-light-primary"
         }`}
       >

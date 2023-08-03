@@ -11,13 +11,13 @@ import {
 import { useThemeHook } from "../GlobalComponents/ThemeProvider";
 import { Link, useNavigate } from "react-router-dom";
 import { auth, db } from "../Firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 
 //icons
 import { AiTwotoneMail } from "react-icons/ai";
 import { VscKey } from "react-icons/vsc";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { useUserStore } from "../zustandCart/CartOperations";
+import { useUserStore } from "../zustandCart/UserOperations";
 
 const SignIn = () => {
   const [loading, setLoading] = useState(false);
@@ -39,9 +39,22 @@ const SignIn = () => {
           const q = query(collection(db, "users"), where("id", "==", user.uid));
           const querySnapshot = await getDocs(q);
           console.log(querySnapshot.docs[0].data());
-          const doc = querySnapshot.docs[0].data();
-          setUser(doc);
-          navigate("/");
+          if (!querySnapshot.empty) {
+            const doc = querySnapshot.docs[0].data();
+            const data = { ...doc, id: querySnapshot.docs[0].id };
+            setUser(data);
+            navigate("/");
+          } else {
+            signOut(auth)
+              .then(() => {
+                alert("user not found");
+                console.log("Logged out");
+              })
+              .catch((error) => {
+                // An error happened.
+                console.log(error);
+              });
+          }
           // ...
         })
         .catch((error) => {
@@ -52,7 +65,7 @@ const SignIn = () => {
     }
   };
   return (
-    <Container className="py-5 mt-5 ">
+    <Container className=" mt-5 ">
       <Row className="justify-content-center mt-5 ">
         <Col
           xs={11}

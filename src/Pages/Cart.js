@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Container, Col, Row, Table } from "react-bootstrap";
 import { useThemeHook } from "../GlobalComponents/ThemeProvider";
-import { useCartStore } from "../zustandCart/CartOperations";
+import { useCartStore } from "../zustandCart/UserOperations";
 import { BsCartX, BsCartCheck } from "react-icons/bs";
 import { Link } from "react-router-dom";
 const Cart = () => {
