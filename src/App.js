@@ -68,7 +68,15 @@ function App() {
               element={<ProductDetails />}
             />
             <Route exact path="/cart" element={<Cart />} />
-            <Route exact path="/checkout" element={<Checkout />} />
+            <Route
+              exact
+              path="/checkout"
+              element={
+                <RequiredAuth>
+                  <Checkout />
+                </RequiredAuth>
+              }
+            />
           </Routes>
         </Router>
       </main>
