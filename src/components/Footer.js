@@ -1,16 +1,32 @@
 import React from "react";
 import "./Footer.css";
+import { SocialIcon } from "react-social-icons";
 const Footer = () => {
   return (
     <div className="bg-dark text-light text-center border">
-      <ul className="d-flex justify-content-center flex-wrap foot-list ">
-        <li className="m-1">Conditions of Use & Sale</li>
-        <li className="m-1">Privacy Notice</li>
-        <li className="m-1"> Interest-Based Ads</li>
-      </ul>
       <span>
-        © 2002-2023, LazyAcs.com, Inc. or its affiliates <br /> Made by
-        @AmitPandey
+        <b>© 2002-2023, LazyAcs.com, Inc. or its affiliates</b>
+        <div className="social-icons p-2">
+          <b>contact me</b>
+          <SocialIcon
+            url="https://www.linkedin.com/in/amit-pandey-006b28240/"
+            bgColor="#2867B2"
+            fgColor="#fff"
+            style={{ height: "30px", width: "30px", marginLeft: "10px" }}
+          />
+          <SocialIcon
+            url="https://github.com/amitp138"
+            bgColor="#333"
+            fgColor="#fff"
+            style={{ height: "30px", width: "30px", marginLeft: "10px"  }}
+          />
+          <SocialIcon
+            url="mailto:amitpande1008@gmail.com"
+            bgColor="#D44638"
+            fgColor="#fff"
+            style={{ height: "30px", width: "30px", marginLeft: "10px" }}
+          />
+        </div>
       </span>
     </div>
   );
